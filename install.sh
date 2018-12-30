@@ -2,172 +2,76 @@
 
 # Install some stuff before others!
 important_casks=(
-  dropbox
   google-chrome
-  hyper
   jetbrains-toolbox
-  istat-menus
-  spotify
-  franz
-  visual-studio-code
   java8
 )
 
 brews=(
+  libyaml
+  ansible
   awscli
-  "bash-snippets --without-all-tools --with-cryptocurrency --with-stocks --with-weather"
-  #cheat
-  coreutils
-  dfc
-  findutils
-  "fontconfig --universal"
-  fpp
-  git
-  git-extras
-  git-fresh
-  git-lfs
-  "gnuplot --with-qt"
-  "gnu-sed --with-default-names"
+  kubernetes-cli
   go
   gpg
-  haskell-stack
-  hh
-  #hosts
-  htop
-  httpie
   iftop
-  "imagemagick --with-webp"
-  lighttpd
-  lnav
-  m-cli
-  mackup
-  macvim
-  mas
-  micro
-  moreutils
-  mtr
-  ncdu
+  wget
+  telnet
   nmap
   node
-  poppler
-  postgresql
   pgcli
-  pv
   python
   python3
-  osquery
-  ruby
-  scala
-  sbt
-  shellcheck
-  stormssh
-  teleport
-  thefuck
-  tmux
   tree
-  trash
-  "vim --with-override-system-vi"
-  #volumemixer
-  "wget --with-iri"
+  maven
+  gradle
 )
 
 casks=(
-  adobe-acrobat-pro
-  airdroid
+  adobe-acrobat
+  android-studio
   android-platform-tools
-  cakebrew
-  cleanmymac
   docker
-  firefox
-  geekbench
+  docker-toolbox
   google-backup-and-sync
-  github-desktop
-  handbrake
-  iina
-  istat-server  
-  launchrocket
-  kap-beta
-  qlcolorcode
-  qlmarkdown
-  qlstephen
-  quicklook-json
-  quicklook-csv
-  macdown
   microsoft-office
-  muzzle
-  neofetch
-  path-finder
-  plex-media-player
-  plex-media-server
-  private-eye
-  satellite-eyes
-  sidekick
   skype
   slack
-  sloth
-  steam
-  transmission
-  transmission-remote-gui
-  tunnelbear
-  xquartz
+  sublime-text
+  sourcetree
+  vlc
+  postman
+  virtualbox
+  the-unarchiver
+  pgadmin4
+  viscosity
 )
 
-pips=(
-  pip
-  glances
-  ohmu
-  pythonpy
-)
+gpg_key='C84B1718'
 
-gems=(
-  bundler
-  travis
-)
-
-npms=(
-  fenix-cli
-  gitjk
-  kill-tabs
-  n
-)
-
-gpg_key='3E219504'
-git_email='pathikritbhowmick@msn.com'
 git_configs=(
   "branch.autoSetupRebase always"
   "color.ui auto"
   "core.autocrlf input"
   "credential.helper osxkeychain"
-  "merge.ff false"
-  "pull.rebase true"
-  "push.default simple"
-  "rebase.autostash true"
-  "rerere.autoUpdate true"
-  "rerere.enabled true"
-  "user.name pathikrit"
-  "user.email ${git_email}"
+  "user.name Gerald Madlmayr"
+  "user.email gerald.madlmayr@gmx.at"
   "user.signingkey ${gpg_key}"
 )
 
-vscode=(
-  rust-lang.rust
-  dragos.scala-lsp
-  lightbend.vscode-sbt-scala
-  alanz.vscode-hie-server
-  rebornix.Ruby
-  redhat.java
-  scala-lang.scala
-  scalameta.scala
-)
-
-fonts=(
-  font-fira-code
-  font-source-code-pro
-)
 
 ######################################## End of app list ########################################
 set +e
 set -x
+
+# show hidden files in finder. (This requires a Reboot to take effect)
+defaults write com.apple.finder AppleShowAllFiles TRUE
+
+# Enable tap to click (Trackpad)
+defaults write com.apple.driver.AppleBluetoothMultitouch.trackpad Clicking -bool true
+
+# Avoid creating .DS_Store files on network volumes
+defaults write com.apple.desktopservices DSDontWriteNetworkStores -bool true
 
 function prompt {
   if [[ -z "${CI}" ]]; then
@@ -213,6 +117,9 @@ if [[ -z "${CI}" ]]; then
 fi
 
 if test ! "$(command -v brew)"; then
+  prompt "Install Xcode (select 'install' only, as we don't need the full xcode)"
+  xcode-select --install
+
   prompt "Install Homebrew"
   ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
 else
@@ -239,35 +146,8 @@ do
   git config --global ${config}
 done
 
-if [[ -z "${CI}" ]]; then
-  gpg --keyserver hkp://pgp.mit.edu --recv ${gpg_key}
-  prompt "Export key to Github"
-  ssh-keygen -t rsa -b 4096 -C ${git_email}
-  pbcopy < ~/.ssh/id_rsa.pub
-  open https://github.com/settings/ssh/new
-fi  
-
 prompt "Install software"
 install 'brew cask install' "${casks[@]}"
-
-prompt "Install secondary packages"
-install 'pip3 install --upgrade' "${pips[@]}"
-install 'gem install' "${gems[@]}"
-install 'npm install --global' "${npms[@]}"
-install 'code --install-extension' "${vscode[@]}"
-brew tap caskroom/fonts
-install 'brew cask install' "${fonts[@]}"
-
-prompt "Upgrade bash"
-brew install bash bash-completion2 fzf
-sudo bash -c "echo $(brew --prefix)/bin/bash >> /private/etc/shells"
-sudo chsh -s "$(brew --prefix)"/bin/bash
-# Install https://github.com/twolfson/sexy-bash-prompt
-(cd /tmp && git clone --depth 1 --config core.autocrlf=false https://github.com/twolfson/sexy-bash-prompt && cd sexy-bash-prompt && make install) && source ~/.bashrc
-
-prompt "Update packages"
-pip3 install --upgrade pip setuptools wheel
-m update install all
 
 if [[ -z "${CI}" ]]; then
   prompt "Install software from App Store"
@@ -278,5 +158,4 @@ prompt "Cleanup"
 brew cleanup
 brew cask cleanup
 
-echo "Run [mackup restore] after DropBox has done syncing ..."
 echo "Done!"
