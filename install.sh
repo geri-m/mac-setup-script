@@ -154,6 +154,9 @@ if [[ -z "${CI}" ]]; then
   mas list
 fi
 
+# https://github.com/keybase/keybase-issues/issues/2798
+export GPG_TTY=$(tty)
+
 prompt "Cleanup"
 brew cleanup
 brew cask cleanup
