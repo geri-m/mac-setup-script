@@ -140,6 +140,9 @@ prompt "Install packages"
 install 'brew_install_or_upgrade' "${brews[@]}"
 brew link --overwrite ruby
 
+prompt "Install SSH Pass to enable Ansible pass an SSH Key when logging in"
+brew install https://raw.githubusercontent.com/kadwanev/bigboybrew/master/Library/Formula/sshpass.rb
+
 prompt "Set git defaults"
 for config in "${git_configs[@]}"
 do
