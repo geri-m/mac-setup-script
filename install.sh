@@ -45,6 +45,7 @@ casks=(
   the-unarchiver
   pgadmin4
   viscosity
+  android-file-transfer
 )
 
 gpg_key='C84B1718'
