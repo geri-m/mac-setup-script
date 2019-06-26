@@ -4,7 +4,7 @@
 important_casks=(
   google-chrome
   jetbrains-toolbox
-  java8
+  java@8
 )
 
 brews=(
@@ -18,7 +18,7 @@ brews=(
   wget
   telnet
   nmap
-  node
+  node@10
   pgcli
   python
   python3
@@ -28,14 +28,10 @@ brews=(
 )
 
 casks=(
-  adobe-acrobat
-  android-studio
-  android-platform-tools
+  adobe-acrobat-reader
   docker
   docker-toolbox
   google-backup-and-sync
-  microsoft-office
-  skype
   slack
   sublime-text
   sourcetree
@@ -45,7 +41,6 @@ casks=(
   the-unarchiver
   pgadmin4
   viscosity
-  android-file-transfer
 )
 
 gpg_key='C84B1718'
@@ -164,5 +159,15 @@ export GPG_TTY=$(tty)
 prompt "Cleanup"
 brew cleanup
 brew cask cleanup
+
+echo "Install PIP"
+sudo easy_install pip
+pip3 install aws-mfa --user
+
+echo "Set path for node."
+echo 'export PATH="/usr/local/opt/node@10/bin:$PATH"' >> ~/.bash_profile
+
+npm install node-sass
+npm rebuild node-sass
 
 echo "Done!"
